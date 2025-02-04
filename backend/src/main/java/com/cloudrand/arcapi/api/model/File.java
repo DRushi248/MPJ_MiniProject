@@ -19,7 +19,8 @@ public class File {
     private String fileName;
     private String filePath;
     private Long fileSize;
-
+    private Integer version; // Add a version field
+    
     @ManyToOne
     @JoinColumn(name = "folder_id", nullable = true)
     private Folder folder;
