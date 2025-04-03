@@ -1,46 +1,38 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
   return (
-    <section className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-16">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-left"
+    <section className="bg-[#2A2F8F] text-white pt-32 pb-24 md:pt-40 md:pb-32">
+      <div className="container mx-auto px-4">
+        <div className="max-w-3xl mx-auto">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl md:text-5xl font-bold mb-8"
           >
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Transform Your Business with Cloud Solutions
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl">
-              Empower your organization with cutting-edge cloud technology. We provide scalable, secure, and efficient solutions tailored to your needs.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button className="btn-primary">
-                Get Started
-              </button>
-              <button className="btn-secondary">
-                Learn More
-              </button>
-            </div>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative"
+            Secure Your Files with CloudRand Today
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg md:text-xl mb-10 text-white/90"
           >
-            <div className="relative z-10">
-              <img
-                src="/hero-image.png"
-                alt="Cloud Solutions"
-                className="w-full h-auto rounded-xl shadow-2xl"
-              />
-            </div>
-            <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl"></div>
+            Experience seamless cloud storage with CloudRand, where your files are safe, accessible, and organized. Choose from our flexible plans tailored to meet your needs.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <Link
+              to="/signup"
+              className="inline-block bg-black text-white px-8 py-4 rounded-lg hover:bg-black/90 transition-colors duration-200 text-lg font-medium"
+            >
+              Sign Up
+            </Link>
           </motion.div>
         </div>
       </div>

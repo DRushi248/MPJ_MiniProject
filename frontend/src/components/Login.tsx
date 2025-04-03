@@ -1,9 +1,15 @@
-import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission
+  };
 
   return (
     <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
@@ -16,12 +22,13 @@ const Login = () => {
           className="absolute inset-0 flex items-center justify-center"
         >
           {/* Add your background design or image here */}
+          <div className="w-4 h-4 bg-white/20 rounded-full absolute top-20 left-20" />
         </motion.div>
       </div>
 
       {/* Right side - Login Form */}
       <div className="flex items-center justify-center p-8 bg-white">
-        <motion.div
+        <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -29,10 +36,10 @@ const Login = () => {
         >
           <div className="text-center">
             <h2 className="text-3xl font-bold text-[#2A2F8F] mb-2">Login here</h2>
-            <p className="text-gray-600 mb-8">Welcome back you've been missed!</p>
+            <p className="text-gray-600">Welcome back you've been missed!</p>
           </div>
 
-          <form className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <input
                 type="email"
@@ -54,9 +61,9 @@ const Login = () => {
             </div>
 
             <div className="text-right">
-              <a href="#" className="text-[#2A2F8F] hover:text-[#2A2F8F]/80 text-sm font-medium">
+              <Link to="/forgot-password" className="text-[#2A2F8F] hover:text-[#2A2F8F]/80 text-sm font-medium">
                 Forgot your password?
-              </a>
+              </Link>
             </div>
 
             <button
@@ -65,34 +72,34 @@ const Login = () => {
             >
               Sign in
             </button>
+
+            <div className="text-center">
+              <Link to="/signup" className="text-gray-600 hover:text-[#2A2F8F] font-medium">
+                Create new account
+              </Link>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <button className="flex items-center justify-center p-3 rounded-lg border border-gray-300 hover:border-[#2A2F8F] transition-all duration-200">
+                <img src="/google.svg" alt="Google" className="w-6 h-6" />
+              </button>
+              <button className="flex items-center justify-center p-3 rounded-lg border border-gray-300 hover:border-[#2A2F8F] transition-all duration-200">
+                <img src="/facebook.svg" alt="Facebook" className="w-6 h-6" />
+              </button>
+              <button className="flex items-center justify-center p-3 rounded-lg border border-gray-300 hover:border-[#2A2F8F] transition-all duration-200">
+                <img src="/apple.svg" alt="Apple" className="w-6 h-6" />
+              </button>
+            </div>
           </form>
-
-          <div className="text-center">
-            <a href="#" className="text-gray-600 hover:text-[#2A2F8F] font-medium">
-              Create new account
-            </a>
-          </div>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <button className="flex items-center justify-center p-3 rounded-lg border border-gray-300 hover:border-[#2A2F8F] transition-all duration-200">
-              <img src="/google.svg" alt="Google" className="w-6 h-6" />
-            </button>
-            <button className="flex items-center justify-center p-3 rounded-lg border border-gray-300 hover:border-[#2A2F8F] transition-all duration-200">
-              <img src="/facebook.svg" alt="Facebook" className="w-6 h-6" />
-            </button>
-            <button className="flex items-center justify-center p-3 rounded-lg border border-gray-300 hover:border-[#2A2F8F] transition-all duration-200">
-              <img src="/apple.svg" alt="Apple" className="w-6 h-6" />
-            </button>
-          </div>
         </motion.div>
       </div>
     </div>
