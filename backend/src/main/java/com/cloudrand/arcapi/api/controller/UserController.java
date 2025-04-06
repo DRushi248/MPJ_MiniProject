@@ -1,14 +1,13 @@
 package com.cloudrand.arcapi.api.controller;
 
+import com.cloudrand.arcapi.api.model.AuthenticationResponse;
 import com.cloudrand.arcapi.api.model.User;
-import com.cloudrand.arcapi.api.model.Role;
 import com.cloudrand.arcapi.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 @RequestMapping("/users")
@@ -17,36 +16,37 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    private BCryptPasswordEncoder passwordEncoder;
-
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody User user, @RequestParam String confirmPassword) {
+    public ResponseEntity<AuthenticationResponse> registerUser(@Valid @RequestBody User user, @RequestParam String confirmPassword) {
         if (!user.getPassword().equals(confirmPassword)) {
-            return ResponseEntity.badRequest().body("Passwords do not match!");
+            return ResponseEntity.badRequest().body(new AuthenticationResponse("Passwords dont match"));
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.USER); // Default role
-        return ResponseEntity.ok(userService.createUser(user));
+        return ResponseEntity.ok(userService.register(user));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
-        return userService.authenticateUser(email, password);
+    public ResponseEntity<AuthenticationResponse> loginUser(@RequestParam String username, @RequestParam String password) {
+        try{
+            return ResponseEntity.ok(userService.authenticate(username, password));
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(new AuthenticationResponse("Invalid Login credentials"));
+        }
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser() {
-        return ResponseEntity.ok("User logged out successfully.");
+        return ResponseEntity.ok(userService.logout());
     }
 
     @PutMapping("/updatedetails")
-    public ResponseEntity<?> updateUser(@RequestParam Long userId, @RequestBody User updatedUser) {
-        return userService.updateUserDetails(userId, updatedUser);
+    public ResponseEntity<?> updateUser(HttpServletRequest request, @RequestBody User updatedUser) {
+        return userService.updateUserDetails(request, updatedUser);
     }
 
     @DeleteMapping("/deleteme")
-    public ResponseEntity<?> deleteUser(@RequestParam Long userId) {
-        return userService.deleteUser(userId);
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
+        return userService.deleteUser(request);
     }
 
     @PostMapping("/forgot-password")

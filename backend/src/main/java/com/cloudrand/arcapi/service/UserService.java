@@ -1,10 +1,17 @@
 package com.cloudrand.arcapi.service;
 
+import com.cloudrand.arcapi.api.model.AuthenticationResponse;
 import com.cloudrand.arcapi.api.model.Role;
 import com.cloudrand.arcapi.api.model.User;
+import com.cloudrand.arcapi.jwt.JwtUtil;
 import com.cloudrand.arcapi.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -13,8 +20,16 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     // Get all users
     public List<User> getAllUsers() {
@@ -46,17 +61,22 @@ public class UserService {
     }
 
     // Update user details
-    public ResponseEntity<?> updateUserDetails(Long userId, User updatedUser) {
+    public ResponseEntity<?> updateUserDetails(HttpServletRequest request, User updatedUser) {
+        Long userId = extractUID(request);
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isPresent()) {
             User user = existingUser.get();
-            user.setUsername(updatedUser.getUsername());
-            user.setEmail(updatedUser.getEmail());
-            user.setPhone(updatedUser.getPhone());
+
+            user.setUsername(updatedUser.getUsername() != null ? updatedUser.getUsername() : user.getUsername());
+            user.setProfilePicture(updatedUser.getProfilePicture() != null ? updatedUser.getProfilePicture() : user.getProfilePicture());
+            user.setPhone(updatedUser.getPhone() != null ? updatedUser.getPhone() : user.getPhone());
+            user.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : user.getEmail());
+
             return ResponseEntity.ok(userRepository.save(user));
         }
         return ResponseEntity.badRequest().body("User not found");
     }
+
     public User updateUser(Long userId, User updatedUser) {
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isPresent()) {
@@ -70,7 +90,16 @@ public class UserService {
     }
 
     // Delete user
-    public ResponseEntity<?> deleteUser(Long userId) {
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
+        Long userId = extractUID(request);
+        if (userRepository.existsById(userId)) {
+            userRepository.deleteById(userId);
+            return ResponseEntity.ok("User deleted successfully");
+        }
+        return ResponseEntity.badRequest().body("User not found");
+    }
+
+    public ResponseEntity<?> deleteUser(long userId) {
         if (userRepository.existsById(userId)) {
             userRepository.deleteById(userId);
             return ResponseEntity.ok("User deleted successfully");
@@ -93,5 +122,41 @@ public class UserService {
 
     public ResponseEntity<?> verifyOTP(String email, String otp) {
         return ResponseEntity.ok("OTP verified successfully");
+    }
+
+    public AuthenticationResponse authenticate(String username, String password){
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        String token = jwtUtil.generateToken(userDetails);
+        return new AuthenticationResponse(token);
+    }
+
+    public AuthenticationResponse register(User request){
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        request.setRole(Role.USER); // Default role
+        userRepository.save(request);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        String token = jwtUtil.generateToken(userDetails);
+        return new AuthenticationResponse(token);
+    }
+
+    public AuthenticationResponse logout(){
+        return new AuthenticationResponse("User logged out successfully.");
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7);
+        }
+        throw new RuntimeException("JWT Token is missing.");
+    }
+
+    private Long extractUID(HttpServletRequest request){
+        String token = extractToken(request);
+        String username = jwtUtil.extractUsername(token);
+        return userRepository.findByUsername(username)
+                .map(User::getUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
