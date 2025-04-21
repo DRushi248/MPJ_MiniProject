@@ -1,48 +1,42 @@
 package com.cloudrand.arcapi.api.controller;
 
-import com.cloudrand.arcapi.api.model.User;
 import com.cloudrand.arcapi.api.model.File;
 import com.cloudrand.arcapi.service.FileService;
-import com.cloudrand.arcapi.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+
 @RestController
 @RequestMapping("/files")
+@RequiredArgsConstructor
 public class FileController {
 
-    @Autowired
-    private FileService fileService;
-
-    @Autowired
-    private UserService userService;
-
-    
-    @GetMapping("/list")
-    public ResponseEntity<List<File>> listFilesByUser(@RequestParam Long userId) {
-        try {
-            User user = userService.getUserById(userId);
-            List<File> files = fileService.getFilesByUser(user);
-            return ResponseEntity.ok(files);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(null);
-        }
-    }
+    private final FileService fileService;
 
     // Upload a file
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId, @RequestParam(value = "folderId", required = false) Long folderId) {
+    public ResponseEntity<String> uploadFile(
+            HttpServletRequest request,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "folderId", required = false) Long folderId
+    ) {
         try {
-            User user = userService.getUserById(userId);
-            fileService.uploadFile(file, user, folderId);
+            fileService.uploadFile(request, file, folderId);
             return ResponseEntity.ok("File uploaded successfully");
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to upload file");
         }
+    }
+
+    // List user files
+    @GetMapping("/list")
+    public ResponseEntity<List<File>> listUserFiles(HttpServletRequest request) {
+        return ResponseEntity.ok(fileService.getFilesByUser(request));
     }
 
     // Download a file
@@ -77,7 +71,8 @@ public class FileController {
             return ResponseEntity.status(404).body("File not found");
         }
     }
-    
+
+    // Get version history
     @GetMapping("/version/{id}")
     public ResponseEntity<List<File>> getFileVersionHistory(@PathVariable Long id) {
         try {
@@ -87,8 +82,13 @@ public class FileController {
             return ResponseEntity.status(404).body(null);
         }
     }
+
+    // Update file metadata
     @PutMapping("/update/{id}")
-    public ResponseEntity<File> updateFileMetadata(@PathVariable Long id, @RequestBody File updatedFile) {
+    public ResponseEntity<File> updateFileMetadata(
+            @PathVariable Long id,
+            @RequestBody File updatedFile
+    ) {
         try {
             File updated = fileService.updateFileMetadata(id, updatedFile);
             return ResponseEntity.ok(updated);
@@ -96,5 +96,4 @@ public class FileController {
             return ResponseEntity.status(404).body(null);
         }
     }
-
 }

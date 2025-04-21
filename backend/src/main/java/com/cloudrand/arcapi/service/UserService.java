@@ -47,7 +47,7 @@ public class UserService {
             throw new RuntimeException("Email already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(user.getRole() != null ? user.getRole() : Role.USER);  // Default role to USER
+        user.setRole(user.getRole() != null ? user.getRole() : Role.user);  // Default role to user
         return userRepository.save(user);
     }
 
@@ -71,22 +71,28 @@ public class UserService {
             user.setProfilePicture(updatedUser.getProfilePicture() != null ? updatedUser.getProfilePicture() : user.getProfilePicture());
             user.setPhone(updatedUser.getPhone() != null ? updatedUser.getPhone() : user.getPhone());
             user.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : user.getEmail());
+//            user.setRole(updatedUser.getRole() != null ? updatedUser.getRole() : user.getRole());
+//            user.setPassword(updatedUser.getPassword() != null ? updatedUser.getPassword() : user.getPassword());
 
             return ResponseEntity.ok(userRepository.save(user));
         }
         return ResponseEntity.badRequest().body("User not found");
     }
-
-    public User updateUser(Long userId, User updatedUser) {
+    public ResponseEntity<?> updateUser(Long userId, User updatedUser) {
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isPresent()) {
             User user = existingUser.get();
-            user.setUsername(updatedUser.getUsername());
-            user.setEmail(updatedUser.getEmail());
-            user.setPhone(updatedUser.getPhone());
-            return userRepository.save(user);
+
+            user.setUsername(updatedUser.getUsername() != null ? updatedUser.getUsername() : user.getUsername());
+            user.setProfilePicture(updatedUser.getProfilePicture() != null ? updatedUser.getProfilePicture() : user.getProfilePicture());
+            user.setPhone(updatedUser.getPhone() != null ? updatedUser.getPhone() : user.getPhone());
+            user.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : user.getEmail());
+//            user.setRole(updatedUser.getRole() != null ? updatedUser.getRole() : user.getRole());
+//            user.setPassword(updatedUser.getPassword() != null ? updatedUser.getPassword() : user.getPassword());
+
+            return ResponseEntity.ok(userRepository.save(user));
         }
-        throw new RuntimeException("User not found");
+        return ResponseEntity.badRequest().body("User not found");
     }
 
     // Delete user
@@ -100,6 +106,7 @@ public class UserService {
     }
 
     public ResponseEntity<?> deleteUser(long userId) {
+
         if (userRepository.existsById(userId)) {
             userRepository.deleteById(userId);
             return ResponseEntity.ok("User deleted successfully");
@@ -124,25 +131,30 @@ public class UserService {
         return ResponseEntity.ok("OTP verified successfully");
     }
 
+
     public AuthenticationResponse authenticate(String username, String password){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateToken(userDetails.getUsername());
         return new AuthenticationResponse(token);
     }
-
     public AuthenticationResponse register(User request){
         request.setPassword(passwordEncoder.encode(request.getPassword()));
-        request.setRole(Role.USER); // Default role
+        request.setRole(Role.user); // Default role
         userRepository.save(request);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        String token = jwtUtil.generateToken(userDetails);
+        String username=request.getUsername();
+
+        String token = jwtUtil.generateToken(username);
         return new AuthenticationResponse(token);
     }
 
     public AuthenticationResponse logout(){
         return new AuthenticationResponse("User logged out successfully.");
     }
+
 
     private String extractToken(HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
@@ -154,9 +166,6 @@ public class UserService {
 
     private Long extractUID(HttpServletRequest request){
         String token = extractToken(request);
-        String username = jwtUtil.extractUsername(token);
-        return userRepository.findByUsername(username)
-                .map(User::getUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return jwtUtil.extractUserId(token);
     }
 }

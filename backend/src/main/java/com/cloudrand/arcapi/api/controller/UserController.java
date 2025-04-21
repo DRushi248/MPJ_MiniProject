@@ -13,6 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class UserController {
 
+
+//    /users/forgot-password
+//    /users/reset-password
+//    /users/resend-otp
+//    /users/verify-otp
+
+
     @Autowired
     private UserService userService;
 
@@ -22,6 +29,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(new AuthenticationResponse("Passwords dont match"));
         }
         return ResponseEntity.ok(userService.register(user));
+
     }
 
     @PostMapping("/login")
@@ -34,19 +42,25 @@ public class UserController {
         }
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser() {
-        return ResponseEntity.ok(userService.logout());
-    }
 
     @PutMapping("/updatedetails")
     public ResponseEntity<?> updateUser(HttpServletRequest request, @RequestBody User updatedUser) {
+
         return userService.updateUserDetails(request, updatedUser);
     }
 
     @DeleteMapping("/deleteme")
     public ResponseEntity<?> deleteUser(HttpServletRequest request) {
         return userService.deleteUser(request);
+    }
+
+
+
+    ///baad mai dekhte hai
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        return ResponseEntity.ok(userService.logout());
     }
 
     @PostMapping("/forgot-password")
