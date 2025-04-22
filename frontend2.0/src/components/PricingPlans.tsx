@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FAQ } from './FAQ';
 import { Footer } from './Footer';
+import ContactForm from './ContactForm';
 
 interface Feature {
   name: string;
@@ -16,9 +18,10 @@ interface PlanProps {
   buttonText: string;
   buttonLink: string;
   isEnterprise?: boolean;
+  onClick?: () => void;
 }
 
-const Plan = ({ name, price, description, features, buttonText, buttonLink, isEnterprise }: PlanProps) => {
+const Plan = ({ name, price, description, features, buttonText, buttonLink, isEnterprise, onClick }: PlanProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -43,16 +46,27 @@ const Plan = ({ name, price, description, features, buttonText, buttonLink, isEn
         <p className="text-gray-600 text-sm">{description}</p>
       </div>
 
-      <Link
-        to={buttonLink}
-        className={`block w-full py-3 px-4 rounded-lg text-center mb-8 transition-colors ${
-          isEnterprise
+      {isEnterprise ? (
+        <button
+          onClick={onClick}
+          className={`block w-full py-3 px-4 rounded-lg text-center mb-8 transition-colors ${isEnterprise
             ? 'bg-[#2A2F8F]/10 text-[#2A2F8F] hover:bg-[#2A2F8F]/20'
             : 'bg-[#6366F1] text-white hover:bg-[#6366F1]/90'
-        }`}
-      >
-        {buttonText}
-      </Link>
+            }`}
+        >
+          {buttonText}
+        </button>
+      ) : (
+        <Link
+          to={buttonLink}
+          className={`block w-full py-3 px-4 rounded-lg text-center mb-8 transition-colors ${isEnterprise
+            ? 'bg-[#2A2F8F]/10 text-[#2A2F8F] hover:bg-[#2A2F8F]/20'
+            : 'bg-[#6366F1] text-white hover:bg-[#6366F1]/90'
+            }`}
+        >
+          {buttonText}
+        </Link>
+      )}
 
       <div className="space-y-4">
         <h3 className="font-medium text-gray-900">Features</h3>
@@ -109,11 +123,11 @@ const Screenshots = () => {
             transition={{ duration: 0.5 }}
             className="rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300"
           >
-            <img
+            {/* <img
               src="/dashboard.png"
               alt="Dashboard Interface"
               className="w-full h-auto rounded-2xl border border-white/10"
-            />
+            /> */}
             <div className="bg-white/5 backdrop-blur-sm p-4 rounded-b-2xl">
               <h3 className="text-white font-semibold">Web Dashboard</h3>
               <p className="text-white/70 text-sm">Manage your files with our intuitive dashboard</p>
@@ -128,11 +142,11 @@ const Screenshots = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300"
           >
-            <img
+            {/* <img
               src="/mobile-app.png"
               alt="Mobile App Interface"
               className="w-full h-auto rounded-2xl border border-white/10"
-            />
+            /> */}
             <div className="bg-white/5 backdrop-blur-sm p-4 rounded-b-2xl">
               <h3 className="text-white font-semibold">Mobile App</h3>
               <p className="text-white/70 text-sm">Take your files on the go with our mobile app</p>
@@ -145,6 +159,8 @@ const Screenshots = () => {
 };
 
 const PricingPlans = () => {
+  const [showContactForm, setShowContactForm] = useState(false);
+
   const plans = [
     {
       name: 'Basic',
@@ -195,7 +211,7 @@ const PricingPlans = () => {
         { name: 'Purchase additional features', included: true }
       ],
       buttonText: 'Contact Us',
-      buttonLink: '/contact',
+      buttonLink: '#',
       isEnterprise: true
     }
   ];
@@ -229,11 +245,36 @@ const PricingPlans = () => {
               <Plan
                 key={plan.name}
                 {...plan}
+                buttonLink={plan.isEnterprise ? '#' : plan.buttonLink}
+                buttonText={plan.isEnterprise ? 'Contact Us' : plan.buttonText}
+                onClick={plan.isEnterprise ? () => setShowContactForm(true) : undefined}
               />
             ))}
           </div>
         </div>
       </section>
+
+      {/* Contact Form Modal */}
+      {showContactForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="relative w-full max-w-4xl"
+          >
+            <button
+              onClick={() => setShowContactForm(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <ContactForm />
+          </motion.div>
+        </div>
+      )}
 
       {/* Screenshots Section */}
       <section className="flex-none">

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.cloudflux.controllers.MainController">
+    <top>
+        <HBox style="-fx-background-color: #2196F3; -fx-padding: 10;">
+            <Label text="CloudFlux" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="logoutButton" text="Logout" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+        </HBox>
+    </top>
+    
+    <left>
+        <VBox spacing="10" style="-fx-padding: 10; -fx-min-width: 200;">
+            <Button fx:id="uploadButton" text="Upload File" style="-fx-pref-width: 180;"/>
+            <Button fx:id="createFolderButton" text="Create Folder" style="-fx-pref-width: 180;"/>
+            <Separator/>
+            <TreeView fx:id="folderTree" style="-fx-pref-width: 180;"/>
+        </VBox>
+    </left>
+    
+    <center>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <TableView fx:id="filesTable" style="-fx-pref-height: 500;">
+                <columns>
+                    <TableColumn fx:id="nameColumn" text="Name" prefWidth="200"/>
+                    <TableColumn fx:id="sizeColumn" text="Size" prefWidth="100"/>
+                    <TableColumn fx:id="modifiedColumn" text="Modified" prefWidth="150"/>
+                    <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="200"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane> 

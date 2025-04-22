@@ -14,7 +14,7 @@ const Dashboard: React.FC = () => {
       {/* Left Sidebar */}
       <div className="w-64 bg-[#2A2F8F] text-white flex flex-col">
         {/* Logo */}
-        <div 
+        <div
           className="p-6 cursor-pointer"
           onClick={() => navigate('/')}
         >
@@ -203,7 +203,7 @@ const Dashboard: React.FC = () => {
           </div>
           <h2 className="text-xl font-semibold mb-1 text-gray-900">Good Morning Aditya</h2>
           <p className="text-sm text-gray-500 mb-6">Another Beautiful Day To Achieve Great Things. Your Data Is Safe And Ready Whenever You Need It!</p>
-          
+
           <div className="flex justify-center space-x-4 mb-6">
             <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
               <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { authService } from '../services/api';
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -10,10 +11,10 @@ const SignUp = () => {
     password: '',
     confirmPassword: '',
     phone: '',
-    verificationCode: '',
     address: ''
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,63 +27,52 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:8083/users/register?confirmPassword=${formData.confirmPassword}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          profilePicture: '/default-avatar.jpg'
-        })
-      });
-
-      const data = await response.json();
-      console.log('Registration response:', data); // Debug log
-
-      if (response.ok) {
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          console.log('Token stored:', data.token); // Debug log
-          navigate('/profile');
-        } else {
-          setError('No token received from server');
-          console.error('No token in response:', data);
-        }
-      } else {
-        setError(data.message || 'Registration failed');
-        console.error('Registration failed:', data);
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      setError('Registration failed');
+      const { confirmPassword, ...registrationData } = formData;
+      const response = await authService.register(registrationData);
+      localStorage.setItem('token', response.token);
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
+    <div className="min-h-screen flex">
       {/* Left side - Background */}
-      <div className="hidden md:block bg-[#2A2F8F] relative overflow-hidden">
+      <div className="hidden md:flex md:w-1/2 bg-[#2A2F8F] relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
           className="absolute inset-0 flex items-center justify-center"
         >
-          {/* Add your background design or image here */}
-          <div className="w-4 h-4 bg-white/20 rounded-full absolute top-20 left-20" />
+          <div className="w-full h-full flex flex-col items-center justify-center p-8">
+            <h1 className="text-4xl font-bold text-white mb-4">Welcome to CloudFlux</h1>
+            <p className="text-white/80 text-lg text-center max-w-md">
+              Your secure and reliable cloud storage solution. Store, share, and access your files from anywhere.
+            </p>
+            <div className="mt-8 grid grid-cols-3 gap-4">
+              {[...Array(9)].map((_, i) => (
+                <div key={i} className="w-4 h-4 bg-white/20 rounded-full" />
+              ))}
+            </div>
+          </div>
         </motion.div>
       </div>
 
       {/* Right side - Sign Up Form */}
-      <div className="flex items-center justify-center p-8 bg-white">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -166,18 +156,6 @@ const SignUp = () => {
             <div>
               <input
                 type="text"
-                name="verificationCode"
-                value={formData.verificationCode}
-                onChange={handleChange}
-                placeholder="Verify Phone Number"
-                className="w-full px-4 py-3 rounded-lg bg-white text-gray-900 border border-gray-300 focus:border-[#2A2F8F] focus:ring-2 focus:ring-[#2A2F8F]/20 outline-none transition-all placeholder-gray-500"
-                required
-              />
-            </div>
-
-            <div>
-              <input
-                type="text"
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
@@ -189,9 +167,10 @@ const SignUp = () => {
 
             <button
               type="submit"
-              className="w-full bg-[#2A2F8F] text-white py-3 rounded-lg font-medium hover:bg-[#2A2F8F]/90 transition-all duration-200"
+              disabled={isLoading}
+              className="w-full bg-[#2A2F8F] text-white py-3 rounded-lg font-medium hover:bg-[#2A2F8F]/90 transition-all duration-200 disabled:opacity-50"
             >
-              Get Started
+              {isLoading ? 'Creating Account...' : 'Get Started'}
             </button>
 
             <div className="text-center">

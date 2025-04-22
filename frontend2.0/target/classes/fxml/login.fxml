@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" spacing="20" xmlns:fx="http://javafx.com/fxml" fx:controller="com.cloudflux.controllers.LoginController">
+    <padding>
+        <Insets top="50" right="50" bottom="50" left="50"/>
+    </padding>
+    
+    <Label text="CloudFlux" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <Label text="Sign in to your account" style="-fx-font-size: 16px;"/>
+    
+    <VBox spacing="10" style="-fx-padding: 20;">
+        <TextField fx:id="usernameField" promptText="Username"/>
+        <PasswordField fx:id="passwordField" promptText="Password"/>
+        <Button fx:id="loginButton" text="Sign In" style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-pref-width: 200;"/>
+        <Hyperlink fx:id="registerLink" text="Don't have an account? Register" onAction="#handleRegister"/>
+    </VBox>
+</VBox> 

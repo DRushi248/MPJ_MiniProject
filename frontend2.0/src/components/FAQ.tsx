@@ -33,7 +33,7 @@ export const FAQ = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl font-bold text-white mb-4"
+            className="text-3xl md:text-4xl font-bold text-black mb-4"
           >
             Frequently asked Questions
           </motion.h2>
@@ -42,7 +42,7 @@ export const FAQ = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-white/80 text-base md:text-lg max-w-2xl mx-auto"
+            className="text-black/80 text-base md:text-lg max-w-2xl mx-auto"
           >
             Can't find the answer you're looking for? Reach out to customer support team.
           </motion.p>
@@ -64,9 +64,8 @@ export const FAQ = () => {
               >
                 <span className="font-medium text-gray-900">{item.question}</span>
                 <svg
-                  className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${
-                    openIndex === index ? 'rotate-180' : ''
-                  }`}
+                  className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

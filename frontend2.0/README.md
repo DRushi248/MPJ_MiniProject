@@ -1,54 +1,47 @@
-# React + TypeScript + Vite
+# CloudFlux JavaFX Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Prerequisites
+- Java 17 or later
+- Maven 3.8 or later
 
-Currently, two official plugins are available:
+## Setup Instructions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Install Java 17
+   - Download from: https://www.oracle.com/java/technologies/downloads/#java17
+   - Add Java to PATH environment variable
+   - Verify installation: `java -version`
 
-## Expanding the ESLint configuration
+2. Install Maven
+   - Download from: https://maven.apache.org/download.cgi
+   - Extract to a directory (e.g., C:\Program Files\Apache\maven)
+   - Add Maven's bin directory to PATH
+   - Verify installation: `mvn -v`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Running the Application
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### Option 1: Using run.bat
+1. Double-click `run.bat` in the project root directory
+2. The script will check prerequisites and run the application
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Option 2: Using Command Line
+1. Open command prompt in the project directory
+2. Run: `mvn clean javafx:run`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Option 3: Using IDE
+1. Import project as Maven project in IntelliJ IDEA or Eclipse
+2. Run `Main` class from `src/main/java/com/cloudflux/Main.java`
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Application Features
+- User authentication (login/register)
+- File upload and download
+- Folder creation and management
+- File sharing
+- File versioning
+
+## Backend Requirements
+- Backend server must be running on `localhost:8080`
+- All API endpoints must be available as specified in the Postman collection
+
+## Test Credentials
+- Username: hk1910
+- Password: securePassword123
